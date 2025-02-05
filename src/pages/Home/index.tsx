@@ -8,17 +8,40 @@ import {
   TaskInput,
   MinutesAmountInput,
 } from "./styles";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  NewCycleValidationSchema,
+  newCycleValidationSchema,
+} from "../../validation-schemas/new-cycle-validation-schema";
 
 export function Home() {
+  const { register, handleSubmit, watch, reset } =
+    useForm<NewCycleValidationSchema>({
+      resolver: zodResolver(newCycleValidationSchema),
+      defaultValues: {
+        task: "",
+        minutesAmount: 5,
+      },
+    });
+
+  function handleCreateNewCycle(data: NewCycleValidationSchema) {
+    console.log(data);
+    reset();
+  }
+
+  const isSubmitDisabled = !watch("task");
+
   return (
     <HomeContainer>
-      <form action="">
+      <form onSubmit={handleSubmit(handleCreateNewCycle)} action="">
         <FormContainer>
           <label htmlFor="task">I will work on</label>
           <TaskInput
             id="task"
             list="task-suggestions"
             placeholder="Name your project"
+            {...register("task")}
           />
 
           <datalist id="task-suggestions">
@@ -28,14 +51,15 @@ export function Home() {
             <option value="Project 4" />
           </datalist>
 
-          <label htmlFor="minuetsAmount">for</label>
+          <label htmlFor="minutesAmount">for</label>
           <MinutesAmountInput
             type="number"
-            id="minuetsAmount"
+            id="minutesAmount"
             placeholder="00"
             step={5}
             min={5}
             max={60}
+            {...register("minutesAmount", { valueAsNumber: true })}
           />
 
           <span>minutes</span>
@@ -49,7 +73,7 @@ export function Home() {
           <span>0</span>
         </CountdownContainer>
 
-        <StartCountdownButton type="submit">
+        <StartCountdownButton type="submit" disabled={isSubmitDisabled}>
           <Play size={24} />
           Start
         </StartCountdownButton>
