@@ -3,4 +3,5 @@ export type Cycle = {
   task: string;
   minutesAmount: number;
   startedAt: Date;
+  interruptedAt?: Date;
 };
