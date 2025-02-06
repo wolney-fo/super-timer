@@ -35,14 +35,38 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => activeCycleId === cycle.id);
 
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
     if (activeCycle) {
       interval = setInterval(() => {
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), activeCycle.startedAt)
+        const secondsDifference = differenceInSeconds(
+          new Date(),
+          activeCycle.startedAt
         );
+
+        if (secondsDifference >= totalSeconds) {
+          setCycles((cycles) =>
+            cycles.map((cycle) => {
+              if (cycle.id === activeCycleId) {
+                return { ...cycle, finishedAt: new Date() };
+              } else {
+                return cycle;
+              }
+            })
+          );
+
+          setAmountSecondsPassed(totalSeconds);
+          setActiveCycleId(null);
+
+          document.title = "Super Timer";
+
+          clearInterval(interval);
+        } else {
+          setAmountSecondsPassed(secondsDifference);
+        }
       }, 1000);
     }
 
@@ -50,7 +74,7 @@ export function Home() {
       clearInterval(interval);
       setAmountSecondsPassed(0);
     };
-  }, [activeCycle]);
+  }, [activeCycle, totalSeconds, activeCycleId]);
 
   function handleCreateNewCycle(data: NewCycleValidationSchema) {
     const id = String(new Date().getTime());
@@ -69,7 +93,7 @@ export function Home() {
   }
 
   function handleInterruptCycle() {
-    setCycles(
+    setCycles((cycles) =>
       cycles.map((cycle) => {
         if (cycle.id === activeCycleId) {
           return { ...cycle, interruptedAt: new Date() };
@@ -84,12 +108,7 @@ export function Home() {
     document.title = "Super Timer";
   }
 
-  const ACTIVE_CYCLE_SECONDS_AMOUNT = activeCycle
-    ? activeCycle.minutesAmount * 60
-    : 0;
-  const currentSeconds = activeCycle
-    ? ACTIVE_CYCLE_SECONDS_AMOUNT - amountSecondsPassed
-    : 0;
+  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
 
   const minutesAmount = Math.floor(currentSeconds / 60);
   const secondsAmount = currentSeconds % 60;
