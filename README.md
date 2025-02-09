@@ -6,12 +6,13 @@ Check it 👉 https://supertimer.wolney.dev/
 
 ## Screenshots
 
-![screenshot](/doc/cover.png)
+![screenshot](/doc/cover.gif)
 
 ## Timeline
 
 ```
 | 🟡 [2025/02/02] Project begins;
+| 🏁 [2025/02/09] Project Finished.
 ```
 
 ## Stack
@@ -19,4 +20,6 @@ Check it 👉 https://supertimer.wolney.dev/
 - ReactJS
 - Typescript
 - Styled Components
+- React Hook Form
 - Vite
+- Zod
